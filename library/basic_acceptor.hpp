@@ -16,14 +16,8 @@ public:
 	typedef BasicEndpoint endpoint;
 
 	BasicAcceptor() noexcept;
-	BasicAcceptor(IoContext& io_context, endpoint& ep) noexcept
-		: io_service_(io_context), listen_fd_(tool->listen(ep))
-	{
-	}
-
-	void async_accept(acceptHandler handler) {
-		io_service_.addEvent(listen_fd_.socket(), handler);
-	}
+	BasicAcceptor(IoContext& io_context, endpoint& ep) noexcept;
+	void async_accept(acceptHandler handler);
 
 private:
 	BasicAcceptor(const BasicAcceptor&) = delete;
