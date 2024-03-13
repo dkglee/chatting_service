@@ -16,24 +16,14 @@ namespace Global {
 class Global::IoContext 
 {
 public:
-	IoContext()
-		: executor_(new Global::Executor())
-	{
-	}
-	IoContext(Global::Executor& executor)
-		: executor_(&executor)
-	{
-	}
-	void addEvent(int fd, acceptHandler handler) {
-		executor_->addEvent(fd, handler);
-	}
-	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag) {
-		executor_->addEvent(fd, buf, len, handler, op_flag);
-	}
-	~IoContext() {
-		delete executor_;
-	}
+	IoContext();
+	IoContext(Global::Executor& executor);
+	void addEvent(int fd, acceptHandler handler);
+	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag);
+	virtual ~IoContext();
+	// single thread run
 	void run();
+	// multi thread run
 	void run(int num);
 private:
 	Global::Executor* executor_;

@@ -11,19 +11,10 @@ namespace Global {
 class Global::BasicEndpoint {
 public:
 	BasicEndpoint() noexcept;
-	BasicEndpoint(Tcp& transport_protocol, unsigned short port_num) noexcept
-		: impl_(transport_protocol.domain(), port_num)
-	{
-	}
-	int type() const noexcept {
-		Tcp().type();
-	}
-	unsigned short port() const noexcept {
-		return impl_.port();
-	}
-	int domain() const noexcept {
-		return impl_.domain();
-	}
+	BasicEndpoint(Tcp& transport_protocol, unsigned short port_num) noexcept;
+	int type() const noexcept;
+	unsigned short port() const noexcept;
+	int domain() const noexcept;
 private:
 	typedef EndpointImpl endpoint;
 	endpoint impl_;

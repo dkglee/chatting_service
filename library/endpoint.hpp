@@ -9,17 +9,13 @@ typedef struct data_type {
 class EndpointImpl {
 public:
 	EndpointImpl() noexcept;
-	EndpointImpl(int domain, unsigned short port_num) noexcept
-		: data_({domain, port_num})
-	{
-	}
-	int domain() const noexcept {
-		return data_.domain;
-	}
-	unsigned short port() const noexcept {
-		return data_.port;
-	}
+	~EndpointImpl() = default;
+	EndpointImpl(int domain, unsigned short port_num) noexcept;
+	int domain() const noexcept;
+	unsigned short port() const noexcept;
 private:
+	EndpointImpl(const EndpointImpl& endpoint) = delete;
+	EndpointImpl& operator=(const EndpointImpl& endpoint) = delete;
 	data data_;
 };
 

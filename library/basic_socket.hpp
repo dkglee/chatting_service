@@ -20,52 +20,27 @@
 # define READ 0
 # define WRITE 1
 
-
 namespace Global {
 	class BasicSocket;
 }
 
-class Global::BasicSocket  {
-private:
-	// enum RW_TYPE {
-	// 	READ = 0,
-	// 	WRITE
-	// } rw;
-public:
-	typedef BasicEndpoint endpoint;
-	BasicSocket() noexcept;
-	~BasicSocket();
-	BasicSocket(IoContext& io_context)
-		: io_service_(io_context)
-	{
-	}
-	BasicSocket(IoContext&& io_context)
-		: io_service_(io_context)
-	{
-	}
-	explicit BasicSocket(Socket&& socket) noexcept
-		: io_service_(this->io_service_), socket_(std::move(socket))
-	{
-	}
-	BasicSocket listen(endpoint& ep) {
-		return BasicSocket(socket_.listenTcp(ep.domain(), ep.type(), ep.port()));
-	}
-	int socket() const noexcept {
-		return socket_.getSocket();
-	}
-	void socket(int socket) noexcept {
-		socket_.setSocket(socket);
-	}
-	void async_read(char* buf, size_t len, socketHandler handler) {
-		io_service_.addEvent(socket_.getSocket(), buf, len, handler, READ);
-	}
-	void async_write(int fd, char* buf, size_t len, socketHandler handler) {
-		io_service_.addEvent(fd, buf, len, handler, WRITE);
-	}
-
+class Global::BasicSocket {
 private:
 	Service io_service_;
 	Socket socket_;
+
+public:
+	typedef Global::BasicEndpoint endpoint;
+	BasicSocket() noexcept;
+	~BasicSocket();
+	BasicSocket(IoContext& io_context);
+	BasicSocket(IoContext&& io_context);
+	explicit BasicSocket(Socket&& socket) noexcept;
+	BasicSocket listen(endpoint& ep);
+	int socket() const noexcept;
+	void socket(int socket) noexcept;
+	void async_read(char* buf, size_t len, socketHandler handler);
+	void async_write(int fd, char* buf, size_t len, socketHandler handler);
 };
 
 #endif

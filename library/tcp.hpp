@@ -6,35 +6,27 @@
 # include "basic_acceptor.hpp"
 # include <sys/types.h>
 # include <sys/socket.h>
+namespace Global {
+	class Tcp;
+}
 
-class Tcp {
+class Global::Tcp {
 public:
 	Tcp();
 	~Tcp();
 
 	typedef BasicEndpoint endpoint;
 	
-	static Tcp v4() noexcept {
-		return Tcp(AF_INET);
-	}
-	static Tcp v6() noexcept {
-		return Tcp(AF_INET6);
-	}
-	int type() const noexcept {
-		return SOCK_STREAM;
-	}
-	int domain() const noexcept {
-		return domain_;
-	}
+	static Tcp v4() noexcept;
+	static Tcp v6() noexcept;
+	static int type() noexcept;
+	int domain() const noexcept;
 
 	typedef BasicSocket socket;
 	typedef BasicAcceptor acceptor;
 
 private:
-	explicit Tcp(int domain) noexcept 
-		: domain_(domain)
-	{
-	}
+	explicit Tcp(int domain) noexcept;
 	int domain_;
 };
 

@@ -2,6 +2,23 @@
 #include <errno.h>
 #include <unistd.h>
 
+Global::Executor::Executor()
+	: epollFd(epoll_create1(0))
+{
+}
+
+Global::Executor::~Executor() {
+	close(epollFd);
+}
+
+void Global::Executor::addEvent(int fd, acceptHandler handler) {
+	acceptQueue.push(Operation{fd, 0, nullptr, { .acceptHandler_ = handler }, ACCEPT});
+}
+
+void Global::Executor::addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag) {
+	rwQueue.push(Operation{fd, len, buf, { .socketHandler_ = handler }, op_flag});
+}
+
 void Global::Executor::executeOne() {
 	int ret;
 	while (!acceptQueue.empty() && !rwQueue.empty()) {

@@ -15,19 +15,10 @@ namespace Global {
 
 class Global::Executor {
 public:
-	Executor()
-		: epollFd(epoll_create1(0))
-	{
-	}
-	~Executor() {
-		close(epollFd);
-	}
-	void addEvent(int fd, acceptHandler handler) {
-		acceptQueue.push(Operation{fd, 0, nullptr, { .acceptHandler_ = handler }, ACCEPT});
-	}
-	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag) {
-		rwQueue.push(Operation{fd, len, buf, { .socketHandler_ = handler }, op_flag});
-	}
+	Executor();
+	virtual ~Executor();
+	void addEvent(int fd, acceptHandler handler);
+	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag);
 	void executeOne();
 private:
 	Executor& operator=(const Executor&) = delete;
