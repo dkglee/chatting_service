@@ -38,14 +38,3 @@ void Global::BasicSocket::socket(int socket) noexcept
 {
 	socket_.setSocket(socket);
 }
-
-void Global::BasicSocket::async_read(char* buf, size_t len, socketHandler handler)
-{
-	io_service_.addEvent(socket_.getSocket(), buf, len, handler, READ);
-}
-
-void Global::BasicSocket::async_write(int fd, char* buf, size_t len, socketHandler handler)
-{
-	io_service_.addEvent(fd, buf, len, handler, WRITE);
-}
-

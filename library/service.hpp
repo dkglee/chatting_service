@@ -18,8 +18,16 @@ public:
 	Service();
 	Service(IoContext& io_context);
 	Service(const Service&);
-	void addEvent(int fd, acceptHandler handler);
-	void addEvent(int fd, char* buf, size_t len, socketHandler hanler, int op_flag);
+	template <typename Func>
+	void addEvent(int fd, Func handler) {
+		io_context_->addEvent(fd, handler);
+	}
+
+	template <typename Func>
+	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
+		io_context_->addEvent(fd, buf, len, handler, op_flag);
+	}
+
 	void setIoContext(IoContext& io_context);
 };
 

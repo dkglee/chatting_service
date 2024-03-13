@@ -18,8 +18,17 @@ class Global::IoContext
 public:
 	IoContext();
 	IoContext(Global::Executor& executor);
-	void addEvent(int fd, acceptHandler handler);
-	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag);
+
+	template <typename Func>
+	void addEvent(int fd, Func handler) {
+		executor_->addEvent(fd, handler);
+	}
+
+	template <typename Func>
+	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
+		executor_->addEvent(fd, buf, len, handler, op_flag);
+	}
+
 	virtual ~IoContext();
 	// single thread run
 	void run();

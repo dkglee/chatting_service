@@ -17,8 +17,12 @@ public:
 
 	BasicAcceptor() noexcept;
 	BasicAcceptor(IoContext& io_context, endpoint&& ep) noexcept;
-	void async_accept(acceptHandler handler);
 
+	template <typename Func>
+	void async_accept(Func handler) {
+		io_service_.addEvent(listen_fd_.socket(), handler);
+	}
+	
 private:
 	BasicAcceptor(const BasicAcceptor&) = delete;
 	BasicAcceptor& operator=(const BasicAcceptor&) = delete;

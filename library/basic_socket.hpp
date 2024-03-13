@@ -39,8 +39,16 @@ public:
 	BasicSocket listen(endpoint& ep);
 	int socket() const noexcept;
 	void socket(int socket) noexcept;
-	void async_read(char* buf, size_t len, socketHandler handler);
-	void async_write(int fd, char* buf, size_t len, socketHandler handler);
+
+	template <typename Func>
+	void async_read(char* buf, size_t len, Func handler) {
+		io_service_.addEvent(socket_.getSocket(), buf, len, handler, READ);
+	}
+
+	template <typename Func>
+	void async_write(int fd, char* buf, size_t len, Func handler) {
+		io_service_.addEvent(fd, buf, len, handler, WRITE);
+	}
 };
 
 #endif

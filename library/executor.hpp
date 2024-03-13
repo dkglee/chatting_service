@@ -17,19 +17,28 @@ class Global::Executor {
 public:
 	Executor();
 	virtual ~Executor();
-	void addEvent(int fd, acceptHandler handler);
-	void addEvent(int fd, char* buf, size_t len, socketHandler handler, int op_flag);
+	
+	template <typename Func>
+	void addEvent(int fd, Func handler) {
+		acceptQueue.push(std::make_shared<Operation<decltype<handler>>>(fd, 0, nullptr, handler, ACCEPT));
+	}
+
+	template <typename Func>
+	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
+		rwQueue.push(std::make_shared<Operation<decltype<handler>>>(fd, len, buf, handler, op_flag));
+	}
+
 	void executeOne();
 private:
 	Executor& operator=(const Executor&) = delete;
 
-	int epollCtl(Operation& op, int op_flag);
+	int epollCtl(std::unique_ptr<IOperation>& op, int op_flag);
 	void callHandler(int ret);
 
 	int epollFd;
 	epoll_event events[MAX_EVENTS];
-	std::queue<Operation> acceptQueue;
-	std::queue<Operation> rwQueue;
+	std::queue<std::unique_ptr<IOperation>> acceptQueue;
+	std::queue<std::unique_ptr<IOperation>> rwQueue;
 };
 
 #endif

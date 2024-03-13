@@ -8,9 +8,4 @@ Global::BasicAcceptor::BasicAcceptor(IoContext& io_context, endpoint&& ep) noexc
 {
 }
 
-void Global::BasicAcceptor::async_accept(acceptHandler handler)
-{
-	io_service_.addEvent(listen_fd_.socket(), handler);
-}
-
 // Path: library/basic_socket.cpp
