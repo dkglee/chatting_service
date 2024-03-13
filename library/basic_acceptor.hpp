@@ -16,7 +16,7 @@ public:
 	typedef BasicEndpoint endpoint;
 
 	BasicAcceptor() noexcept;
-	BasicAcceptor(IoContext& io_context, endpoint& ep) noexcept;
+	BasicAcceptor(IoContext& io_context, endpoint&& ep) noexcept;
 	void async_accept(acceptHandler handler);
 
 private:
