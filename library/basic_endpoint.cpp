@@ -3,7 +3,7 @@
 Global::BasicEndpoint::BasicEndpoint() noexcept
 {}
 
-Global::BasicEndpoint::BasicEndpoint(Tcp& transport_protocol, unsigned short port_num) noexcept
+Global::BasicEndpoint::BasicEndpoint(Tcp&& transport_protocol, unsigned short port_num) noexcept
 	: impl_(transport_protocol.domain(), port_num)
 {
 }

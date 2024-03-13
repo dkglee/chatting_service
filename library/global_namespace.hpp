@@ -13,6 +13,7 @@ namespace Global {
 	# define SUCCESS 0
 	# define FAIL 1
 
+
 	typedef void (*acceptHandler)(int&&, BasicSocket&);
 	typedef void (*socketHandler)(int, size_t);
 

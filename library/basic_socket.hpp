@@ -36,7 +36,7 @@ public:
 	BasicSocket(IoContext& io_context);
 	BasicSocket(IoContext&& io_context);
 	explicit BasicSocket(Socket&& socket) noexcept;
-	BasicSocket listen(endpoint& ep);
+	BasicSocket listen(endpoint&& ep);
 	int socket() const noexcept;
 	void socket(int socket) noexcept;
 	void async_read(char* buf, size_t len, socketHandler handler);
