@@ -4,10 +4,11 @@
 # include <queue>
 # include <sys/epoll.h>
 # include <sys/types.h>
-# include <socket.hpp>
+# include <sys/socket.h>
+# include <memory>
 
 # include "global_namespace.hpp"
-# include "io_context.hpp"
+// # include "basic_socket.hpp"
 
 namespace Global {
 	class Executor;
@@ -20,25 +21,31 @@ public:
 	
 	template <typename Func>
 	void addEvent(int fd, Func handler) {
-		acceptQueue.push(std::make_shared<Operation<decltype<handler>>>(fd, 0, nullptr, handler, ACCEPT));
+		acceptQueue.push(new OperationAccept(fd, 0, nullptr, handler, ACCEPT));
 	}
 
 	template <typename Func>
 	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
-		rwQueue.push(std::make_shared<Operation<decltype<handler>>>(fd, len, buf, handler, op_flag));
+		// std::cout << "addEvent in Executor" << std::endl;
+		// std::cout << "fd: " << fd << std::endl;
+		// std::cout << "buf: " << (void*)buf << std::endl;
+		// std::cout << "len: " << len << std::endl;
+		// std::cout << "op_flag: " << op_flag << std::endl;
+		// handler(0, 0);
+		rwQueue.push(new OperationSocket(fd, len, buf, handler, op_flag));
 	}
 
 	void executeOne();
 private:
 	Executor& operator=(const Executor&) = delete;
 
-	int epollCtl(std::unique_ptr<IOperation>& op, int op_flag);
+	int epollCtl(IOperation* op);
 	void callHandler(int ret);
 
 	int epollFd;
 	epoll_event events[MAX_EVENTS];
-	std::queue<std::unique_ptr<IOperation>> acceptQueue;
-	std::queue<std::unique_ptr<IOperation>> rwQueue;
+	std::queue<IOperation*> acceptQueue;
+	std::queue<IOperation*> rwQueue;
 };
 
 #endif

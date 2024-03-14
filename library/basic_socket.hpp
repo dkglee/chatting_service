@@ -1,10 +1,10 @@
 #ifndef BASIC_SOCKET_HPP
 # define BASIC_SOCKET_HPP
 
-# include "socket.hpp"
 # include "basic_endpoint.hpp"
 # include "service.hpp"
 # include "io_context.hpp"
+# include "socket.hpp"
 # include "global_namespace.hpp"
 
 # include <sys/types.h>
@@ -25,30 +25,37 @@ namespace Global {
 }
 
 class Global::BasicSocket {
-private:
-	Service io_service_;
-	Socket socket_;
-
 public:
-	typedef Global::BasicEndpoint endpoint;
+	// typedef Global::BasicEndpoint endpoint;
+	// BasicSocket(IoContext&& io_context);
+	// explicit BasicSocket(Socket&& socket) noexcept;
+	// BasicSocket listen(BasicEndpoint& ep);
 	BasicSocket() noexcept;
 	~BasicSocket();
 	BasicSocket(IoContext& io_context);
-	BasicSocket(IoContext&& io_context);
-	explicit BasicSocket(Socket&& socket) noexcept;
-	BasicSocket listen(endpoint& ep);
-	int socket() const noexcept;
-	void socket(int socket) noexcept;
+	BasicSocket(const BasicSocket& other);
+	BasicSocket(const BasicSocket&& other);
+	BasicSocket(BasicEndpoint& ep);
+	BasicSocket(int socket);
+
+	int getSocket() const noexcept;
+	void setSocket(int socket) noexcept;
+	void setIoService(Service& io_service);
 
 	template <typename Func>
 	void async_read(char* buf, size_t len, Func handler) {
+		std::cout << "async_read" << std::endl;
 		io_service_.addEvent(socket_.getSocket(), buf, len, handler, READ);
 	}
 
 	template <typename Func>
 	void async_write(int fd, char* buf, size_t len, Func handler) {
+		std::cout << "async_write" << std::endl;
 		io_service_.addEvent(fd, buf, len, handler, WRITE);
 	}
+private:
+	Service io_service_;
+	Socket socket_;
 };
 
 #endif

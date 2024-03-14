@@ -6,8 +6,8 @@
 # include <queue>
 # include <memory>
 
-# include "executor.hpp"
 # include "global_namespace.hpp"
+# include "executor.hpp"
 
 namespace Global {
 	class IoContext;
@@ -15,9 +15,15 @@ namespace Global {
 
 class Global::IoContext 
 {
+private:
+	std::shared_ptr<Executor> executor_;
 public:
 	IoContext();
-	IoContext(Global::Executor& executor);
+	// IoContext(Executor& executor);
+	IoContext(const IoContext&);
+
+	void setExecutor(std::shared_ptr<Executor> executor);
+	std::shared_ptr<Executor> getExecutor();
 
 	template <typename Func>
 	void addEvent(int fd, Func handler) {
@@ -29,13 +35,12 @@ public:
 		executor_->addEvent(fd, buf, len, handler, op_flag);
 	}
 
-	virtual ~IoContext();
+	~IoContext();
 	// single thread run
 	void run();
 	// multi thread run
 	void run(int num);
-private:
-	Global::Executor* executor_;
 };
+
 
 #endif

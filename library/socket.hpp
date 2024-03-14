@@ -17,8 +17,11 @@ class Socket {
 public:
 	Socket() noexcept;
 	~Socket();
-	Socket(const Socket& socket);
-	Socket listenTcp(int domain, int type, unsigned short port_);
+	Socket(const Socket& socket) noexcept;
+	Socket(const Socket&& socket) noexcept;
+	Socket(int domain, int type, unsigned short port_);
+	Socket(int socket);
+	void listenTcp(int domain, int type, unsigned short port_);
 	int getSocket() const noexcept;
 	void setSocket(int socket) noexcept;
 private:

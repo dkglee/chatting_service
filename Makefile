@@ -1,7 +1,7 @@
 NAME = chat_server
 
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++11
+CFLAGS = -Wall -Wextra -std=c++17 -g
 LDFLAGS = -pthread
 
 RM = rm -rf
@@ -22,8 +22,8 @@ OBJS = $(SRCS:.cpp=.o)
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-${NAME}: $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(NAME)
+${NAME}: ${OBJS}
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(NAME)
 
 all: $(NAME)
 

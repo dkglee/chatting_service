@@ -5,30 +5,31 @@
 #include "basic_socket.hpp"
 #include "basic_endpoint.hpp"
 #include "service.hpp"
+# include "global_namespace.hpp"
 
 namespace Global {
 	class BasicAcceptor;
 }
 
 class Global::BasicAcceptor {
-public:
-	typedef BasicSocket socket;
-	typedef BasicEndpoint endpoint;
-
-	BasicAcceptor() noexcept;
-	BasicAcceptor(IoContext& io_context, endpoint&& ep) noexcept;
-
-	template <typename Func>
-	void async_accept(Func handler) {
-		io_service_.addEvent(listen_fd_.socket(), handler);
-	}
-	
 private:
 	BasicAcceptor(const BasicAcceptor&) = delete;
 	BasicAcceptor& operator=(const BasicAcceptor&) = delete;
 	Service io_service_;
-	socket listen_fd_;
-	socket* tool;
+	BasicSocket listen_fd_;
+	// socket* tool;
+
+public:
+	BasicAcceptor() noexcept;
+	BasicAcceptor(IoContext& io_context, BasicEndpoint& ep) noexcept;
+	Service& getIoService() {
+		return io_service_;
+	}
+	template <typename Func>
+	void async_accept(Func handler) {
+		std::cout << "async_accept" << std::endl;
+		io_service_.addEvent(listen_fd_.getSocket(), handler);
+	}
 };
 
 #endif

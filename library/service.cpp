@@ -1,10 +1,10 @@
 #include "service.hpp"
 
-Global::Service::Service() noexcept
+Global::Service::Service()
 {}
 
-Global::Service::Service(IoContext& io_context) noexcept
-	: io_context_(&io_context)
+Global::Service::Service(IoContext& io_context)
+	: io_context_(io_context)
 {}
 
 Global::Service::Service(const Service& service)
@@ -12,7 +12,12 @@ Global::Service::Service(const Service& service)
 {}
 
 
-void Global::Service::setIoContext(IoContext& io_context)
+void Global::Service::setIoContext(Global::IoContext& io_context)
 {
-	io_context_ = &io_context;
+	io_context_.setExecutor(io_context.getExecutor());
+}
+
+Global::IoContext& Global::Service::getIoContext()
+{
+	return io_context_;
 }

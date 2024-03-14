@@ -1,4 +1,5 @@
 #include "executor.hpp"
+#include "basic_socket.hpp"
 #include <errno.h>
 #include <unistd.h>
 
@@ -8,24 +9,25 @@ Global::Executor::Executor()
 }
 
 Global::Executor::~Executor() {
+	std::cout << "Executor destructor" << std::endl;
 	close(epollFd);
 }
 
 void Global::Executor::executeOne() {
 	int ret;
-	while (!acceptQueue.empty() && !rwQueue.empty()) {
+	while (!acceptQueue.empty() || !rwQueue.empty()) {
 		if (!acceptQueue.empty()) {
-			std::unique_ptr<IOperation> op = std::move(acceptQueue.front());
+			IOperation* op = acceptQueue.front();
 			acceptQueue.pop();
-			if (epollCtl(op, ACCEPT) == -1) {
+			if (epollCtl(op) == -1) {
 				// error
 			}
 		}
 		if (!rwQueue.empty()) {
 			while (!rwQueue.empty()) {
-				std::unique_ptr<IOperation> op = std::move(rwQueue.front());
+				IOperation* op = rwQueue.front();
 				rwQueue.pop();
-				if (epollCtl(op, READ_WRITE) == -1) {
+				if (epollCtl(op) == -1) {
 					// error
 				}
 			}
@@ -35,27 +37,50 @@ void Global::Executor::executeOne() {
 	}
 }
 
-int Global::Executor::epollCtl(std::unique_ptr<IOperation>& temp, int op_flag) {
+int Global::Executor::epollCtl(IOperation* op) {
 	epoll_event event;
-	IOperation* op = temp.release();
-	event.data.ptr = &op;
+	// IOperation* op = temp.release();
+	event.data.ptr = (void*)op;
 	event.events = EPOLLIN | EPOLLET | EPOLLPRI;
+	if (op->op() == ACCEPT) {
+		printf("before event ACCEPT op=%p\n", op);
+	} else if (op->op() == READ) {
+		printf("before event READ op=%p\n", op);
+	} else {
+		printf("before event Write op=%p\n", op);
+	}
 	if (op->op() == WRITE) {
 		event.events |= EPOLLOUT;
 	}
 	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, op->fd(), &event) == -1) {
-		if (errno = EEXIST && op->op() == WRITE) {
+		if (errno == EEXIST && op->op() == WRITE) {
 			if (epoll_ctl(epollFd, EPOLL_CTL_MOD, op->fd(), &event) == -1) {
 				// error
 			}
+		} else if (errno == EEXIST) {
+			if (epoll_ctl(epollFd, EPOLL_CTL_MOD, op->fd(), &event) == -1) {
+				// error
+			}
+		} else if (errno == EBADF) {
+			if (op->op() == ACCEPT) {
+				std::cout << "accept fd is bad" << std::endl;
+			}
+			else {
+				std::cout << "new fd: " << op->fd() << " is bad" << std::endl;
+				// error
+			}
 		}
+		// else if {
+
+		// }
 	}
 	return 0;
 }
 
 void Global::Executor::callHandler(int ret) {
 	for (int i = 0; i < ret; i++) {
-		std::unique_ptr<IOperation> op(static_cast<IOperation*>(events[i].data.ptr));
+		IOperation* op = static_cast<IOperation*>(events[i].data.ptr);
+		printf("after event op=%p\n", op);
 		if (events[i].events & EPOLLIN) {
 			if (op->op() == ACCEPT) {
 				while (1) {
@@ -67,37 +92,45 @@ void Global::Executor::callHandler(int ret) {
 						BasicSocket null;
 						op->acceptHandler(FAIL, null);
 					}
-					// new Socket을 만들어서 보내줘야함! 해당 부분 오류 고칠것!
-					BasicSocket newSocket(IoContext(*this));
-					newSocket.socket(fd);
+					
+					BasicSocket newSocket;
+					// newSocket.setIoService(*this);
+					newSocket.setSocket(fd);
+					std::cout << "new fd: " << newSocket.getSocket() << std::endl;
 					op->acceptHandler(SUCCESS, newSocket);
 				}
+				delete op;
 				continue;
 			} else {
 				int n = recv(op->fd(), op->buf(), op->len(), 0);
 				if (n == -1) {
 					op->socketHandler(FAIL, n);
+					delete op;
 					continue;
 				}
 				op->socketHandler(SUCCESS, n);
+				delete op;
 			}
 		}
 		if (events[i].events & EPOLLOUT) {
 			int n = send(op->fd(), op->buf(), op->len(), 0);
 			if (n == -1) {
 				op->socketHandler(FAIL, n);
+				delete op;
 				continue;
 			}
-			op->len(n);
-			op->buf(n);
+			op->aluLen(n);
+			op->aluBuf(n);
 			if (op->len() <= 0) {
 				epoll_event ev;
 				ev.events = EPOLLIN | EPOLLET | EPOLLPRI;
 				epoll_ctl(epollFd, EPOLL_CTL_MOD, op->fd(), &ev);
 				op->socketHandler(SUCCESS, n);
+				delete op;
 				continue;
+			} else {
+				rwQueue.push(op);
 			}
-			rwQueue.push(std::move(op));
 		}
 	}
 }

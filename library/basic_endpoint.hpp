@@ -3,6 +3,7 @@
 
 # include "tcp.hpp"
 # include "endpoint.hpp"
+# include "global_namespace.hpp"
 
 namespace Global {
 	class BasicEndpoint;

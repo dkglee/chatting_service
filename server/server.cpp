@@ -1,57 +1,80 @@
+#include "../library/global_namespace.hpp"
 #include "../library/io_context.hpp"
 #include "../library/tcp.hpp"
+#include "../library/basic_acceptor.hpp"
+#include "../library/basic_socket.hpp"
+#include "../library/basic_endpoint.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <memory>
 
-class Session {
+class Session : public std::enable_shared_from_this<Session> {
 public:
-	Session(Global::Tcp::socket socket)
+	Session(Global::BasicSocket socket)
 		: socket_(std::move(socket))
 	{
 	}
+	~Session() {
+		std::cout << "session destructed" << std::endl;
+	}
 	void start() {
+		std::cout << "hello" << std::endl;
 		do_read();
 	}
 private:
 	char buf_[1024];
 	void do_write(std::size_t bytes) {
-		socket_.async_write(socket_.socket(), buf_, bytes, [this](int error, std::size_t bytes_written){
+		auto self(shared_from_this());
+		socket_.async_write(socket_.getSocket(), buf_, bytes, [this, self](int error, int bytes_written){
+			(void)bytes_written;
 			if (!error) {
 				do_read();
 			}
 		});
-	
+
 	}
+
 	void do_read() {
-		socket_.async_read(buf_, 1024, [this](int error, std::size_t bytes_read){
+		std::cout << "buf: " << (void*)buf_ << std::endl;
+		auto self(shared_from_this());
+		socket_.async_read(buf_, 1024, [this, self](int error, int bytes_read){
 			if (!error) {
 				do_write(bytes_read);
 			}
-		})
+		});
 	}
-	Global::Tcp::socket socket_;
+
+	Global::BasicSocket socket_;
 };
 
 class Server {
 public:
-	Server(Global::IoContext& io_context, unsigned short port)
-		: acceptor_(io_context, Global::Tcp::endpoint(Global::Tcp::v4(), port))
+	Server(Global::IoContext& io_context, Global::BasicEndpoint& ep)
+		: acceptor_(io_context, ep)
 	{
+		std::cout << "server started" << std::endl;
 		start_accept();
 	}
 	void start_accept() {
-		acceptor_.async_accept([](int&& error, Global::Tcp::socket& socket){
+		acceptor_.async_accept([this](int error, Global::BasicSocket& socket){
+			std::cout << "accept start" << std::endl;
 			if (!error) {
+				socket.setIoService(acceptor_.getIoService());
 				std::make_shared<Session>(socket)->start();
 			}
+			start_accept();
 		});
-		start_accept();
+		std::cout << "accept end" << std::endl;
 	}
 private:
-	Global::Tcp::acceptor acceptor_;
+	Global::BasicAcceptor acceptor_;
 };
 
 int main(void) {
 	Global::IoContext io_context;
-	Server server(io_context, 8080);
+	Global::BasicEndpoint ep(Global::Tcp::v4(), 8080);
+	Server server(io_context, ep);
 	io_context.run();
 	return 0;
 }
