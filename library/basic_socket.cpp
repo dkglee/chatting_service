@@ -35,8 +35,8 @@ Global::BasicSocket::BasicSocket(int socket)
 {
 }
 
-Global::BasicSocket::BasicSocket(BasicEndpoint& ep)
-	: socket_(ep.domain(), ep.type(), ep.port())
+Global::BasicSocket::BasicSocket(IoContext& io_context, BasicEndpoint& ep)
+	: io_service_(io_context), socket_(ep.domain(), ep.type(), ep.port())
 {
 }
 

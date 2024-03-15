@@ -4,8 +4,9 @@
 #include <unistd.h>
 
 Global::Executor::Executor()
-	: epollFd(epoll_create1(0))
+	: epollFd(epoll_create1(0)), running(false)
 {
+	std::cout << "Executor constructor" << std::endl;
 }
 
 Global::Executor::~Executor() {
@@ -15,8 +16,9 @@ Global::Executor::~Executor() {
 
 void Global::Executor::executeOne() {
 	int ret;
-	while (!acceptQueue.empty() || !rwQueue.empty()) {
+	while (running || !acceptQueue.empty() || !rwQueue.empty()) {
 		if (!acceptQueue.empty()) {
+			running = true;
 			IOperation* op = acceptQueue.front();
 			acceptQueue.pop();
 			if (epollCtl(op) == -1) {
@@ -39,7 +41,6 @@ void Global::Executor::executeOne() {
 
 int Global::Executor::epollCtl(IOperation* op) {
 	epoll_event event;
-	// IOperation* op = temp.release();
 	event.data.ptr = (void*)op;
 	event.events = EPOLLIN | EPOLLET | EPOLLPRI;
 	if (op->op() == ACCEPT) {
@@ -107,6 +108,11 @@ void Global::Executor::callHandler(int ret) {
 					op->socketHandler(FAIL, n);
 					delete op;
 					continue;
+				} else if (n == 0) {
+					delFD(op->fd());
+					op->socketHandler(CLOSE, n);
+					delete op;
+					continue;
 				}
 				op->socketHandler(SUCCESS, n);
 				delete op;
@@ -135,3 +141,7 @@ void Global::Executor::callHandler(int ret) {
 	}
 }
 
+void Global::Executor::delFD(int fd) {
+	epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, nullptr);
+	close(fd);
+}

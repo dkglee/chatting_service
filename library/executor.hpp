@@ -8,7 +8,6 @@
 # include <memory>
 
 # include "global_namespace.hpp"
-// # include "basic_socket.hpp"
 
 namespace Global {
 	class Executor;
@@ -26,12 +25,6 @@ public:
 
 	template <typename Func>
 	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
-		// std::cout << "addEvent in Executor" << std::endl;
-		// std::cout << "fd: " << fd << std::endl;
-		// std::cout << "buf: " << (void*)buf << std::endl;
-		// std::cout << "len: " << len << std::endl;
-		// std::cout << "op_flag: " << op_flag << std::endl;
-		// handler(0, 0);
 		rwQueue.push(new OperationSocket(fd, len, buf, handler, op_flag));
 	}
 
@@ -41,8 +34,10 @@ private:
 
 	int epollCtl(IOperation* op);
 	void callHandler(int ret);
+	void delFD(int fd);
 
 	int epollFd;
+	bool running;
 	epoll_event events[MAX_EVENTS];
 	std::queue<IOperation*> acceptQueue;
 	std::queue<IOperation*> rwQueue;

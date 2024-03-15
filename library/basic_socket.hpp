@@ -35,7 +35,7 @@ public:
 	BasicSocket(IoContext& io_context);
 	BasicSocket(const BasicSocket& other);
 	BasicSocket(const BasicSocket&& other);
-	BasicSocket(BasicEndpoint& ep);
+	BasicSocket(IoContext& io_context, BasicEndpoint& ep);
 	BasicSocket(int socket);
 
 	int getSocket() const noexcept;

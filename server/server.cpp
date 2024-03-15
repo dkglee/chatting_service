@@ -19,7 +19,6 @@ public:
 		std::cout << "session destructed" << std::endl;
 	}
 	void start() {
-		std::cout << "hello" << std::endl;
 		do_read();
 	}
 private:
@@ -36,7 +35,6 @@ private:
 	}
 
 	void do_read() {
-		std::cout << "buf: " << (void*)buf_ << std::endl;
 		auto self(shared_from_this());
 		socket_.async_read(buf_, 1024, [this, self](int error, int bytes_read){
 			if (!error) {

@@ -18,7 +18,6 @@ Global::IoContext::IoContext(const Global::IoContext& io_context)
 Global::IoContext::~IoContext() {
 	std::cout << "why? I'm Died? Count: ";
 	std::cout << executor_.use_count() << std::endl;
-	// delete executor_;
 }
 
 void Global::IoContext::run() {

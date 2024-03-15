@@ -3,14 +3,6 @@
 
 #include <iostream>
 
-// #include "executor.hpp"
-// #include "io_context.hpp"
-// #include "service.hpp"
-// #include "tcp.hpp"
-// #include "basic_endpoint.hpp"
-// #include "basic_socket.hpp"
-// #include "basic_acceptor.hpp"
-
 namespace Global {
 	#define READ 0
 	#define WRITE 1
@@ -19,6 +11,7 @@ namespace Global {
 	#define MAX_EVENTS 10
 	#define SUCCESS 0
 	#define FAIL 1
+	#define CLOSE 2
 
 	// std::pair<char*, int> make_pair(char* buf, int len) {
 	// 	return std::make_pair(buf, len);

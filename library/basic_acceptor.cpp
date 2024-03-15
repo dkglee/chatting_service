@@ -4,7 +4,7 @@ Global::BasicAcceptor::BasicAcceptor() noexcept
 {}
 
 Global::BasicAcceptor::BasicAcceptor(IoContext& io_context, BasicEndpoint& ep) noexcept
-	: io_service_(io_context), listen_fd_(ep)
+	: io_service_(io_context), listen_fd_(io_context, ep)
 {
 }
 
