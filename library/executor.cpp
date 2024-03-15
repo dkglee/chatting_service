@@ -16,7 +16,7 @@ Global::Executor::~Executor() {
 
 void Global::Executor::executeOne() {
 	int ret;
-	while (running || !acceptQueue.empty() || !rwQueue.empty()) {
+	while (running || !acceptQueue.empty() || !schedular_.rwqueueEmpty()) {
 		if (!acceptQueue.empty()) {
 			running = true;
 			IOperation* op = acceptQueue.front();
@@ -25,10 +25,9 @@ void Global::Executor::executeOne() {
 				// error
 			}
 		}
-		if (!rwQueue.empty()) {
-			while (!rwQueue.empty()) {
-				IOperation* op = rwQueue.front();
-				rwQueue.pop();
+		if (!schedular_.rwqueueEmpty()) {
+			while (!schedular_.rwqueueEmpty()) {
+				IOperation* op = schedular_.rwpopEvent();
 				if (epollCtl(op) == -1) {
 					// error
 				}
@@ -135,7 +134,7 @@ void Global::Executor::callHandler(int ret) {
 				delete op;
 				continue;
 			} else {
-				rwQueue.push(op);
+				schedular_.rwpushEvent(op);
 			}
 		}
 	}

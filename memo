@@ -1,0 +1,10 @@
+이전에서 나왔던 문제
+ - 단순 문법상 문제였다.
+ - rvalue와 lvalue에 대한 개념을 확실히 할것
+ - constructor와 destructor를 확실하게 정의해 놓을것
+ - lamda의 반환형 혹은 타입에 대해서 명확하게 알아놓을것
+ - template의 다형성을 만족하기 위한 방법
+
+ 이제 해결해야할 문제
+ - multithread 환경 구축
+ - 기능 구축

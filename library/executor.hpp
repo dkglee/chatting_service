@@ -8,6 +8,7 @@
 # include <memory>
 
 # include "global_namespace.hpp"
+# include "thread_schedular.hpp"
 
 namespace Global {
 	class Executor;
@@ -25,7 +26,7 @@ public:
 
 	template <typename Func>
 	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
-		rwQueue.push(new OperationSocket(fd, len, buf, handler, op_flag));
+		schedular_.addEvent(fd, buf, len, handler, op_flag);
 	}
 
 	void executeOne();
@@ -38,9 +39,9 @@ private:
 
 	int epollFd;
 	bool running;
+	Global::Schedular schedular_;
 	epoll_event events[MAX_EVENTS];
 	std::queue<IOperation*> acceptQueue;
-	std::queue<IOperation*> rwQueue;
 };
 
 #endif

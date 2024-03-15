@@ -2,6 +2,19 @@
 # define GLOBAL_NAMESPACE_HPP
 
 #include <iostream>
+#include <queue>
+#include <mutex>
+#include <thread>
+
+namespace Global {
+	class IOperation;
+	struct Thread
+	{
+		std::mutex mtx;
+		std::queue<IOperation*> rwQueue;
+	};
+	inline Thread shm;
+};
 
 namespace Global {
 	#define READ 0
@@ -13,6 +26,7 @@ namespace Global {
 	#define FAIL 1
 	#define CLOSE 2
 
+	
 	class BasicSocket;
 	class IOperation {
 	public:
@@ -118,6 +132,19 @@ namespace Global {
 			handler_(error, byte);
 		}
 	};
+	// 1. 전역으로 가져갈 수 있나? // 전역으로 가져가야만 함.
+	// 
+	// Thread shm;
+	// class Schedular;
+
+	template <typename Func>
+	void async_write(int fd, char* buf, size_t len, Func handler) {
+		// Schedular schedular_;
+		// schedular_.addEvent(fd, buf, len, handler, WRITE);
+		std::lock_guard<std::mutex> lock(shm.mtx);
+		shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, WRITE));
+	}
 };
+
 
 #endif

@@ -25,7 +25,7 @@ private:
 	char buf_[1024];
 	void do_write(std::size_t bytes) {
 		auto self(shared_from_this());
-		socket_.async_write(socket_.getSocket(), buf_, bytes, [this, self](int error, int bytes_written){
+		Global::async_write(socket_.getSocket(), buf_, bytes, [this, self](int error, int bytes_written){
 			(void)bytes_written;
 			if (!error) {
 				do_read();
