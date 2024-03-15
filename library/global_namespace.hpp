@@ -13,10 +13,6 @@ namespace Global {
 	#define FAIL 1
 	#define CLOSE 2
 
-	// std::pair<char*, int> make_pair(char* buf, int len) {
-	// 	return std::make_pair(buf, len);
-	// }
-
 	class BasicSocket;
 	class IOperation {
 	public:
@@ -68,14 +64,12 @@ namespace Global {
 		}
 
 		virtual void acceptHandler(int error, BasicSocket& socket) {
-			// std::cout << "acceptHandler in OperationAccept" << std::endl;
 			handler_(error, socket);
 		}
 
 		virtual void socketHandler(int error, int byte) {
 			(void)error;
 			(void)byte;
-			// handler_(error, byte);
 		}
 	};
 	
@@ -118,14 +112,12 @@ namespace Global {
 		virtual void acceptHandler(int error, BasicSocket& socket) {
 			(void)error;
 			(void)socket;
-			// handler_(error, socket);
 		}
 
 		virtual void socketHandler(int error, int byte) {
 			handler_(error, byte);
 		}
 	};
-
 };
 
 #endif
