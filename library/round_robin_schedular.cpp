@@ -19,7 +19,7 @@ void Global::RoundRobinSchedular::runOneOrAll(int num) {
 			thread_pool.emplace_back([this, threadId] {
 				this->run(threadId);
 			});
-			thread_pool[threadId].detach();
+			thread_pool[threadId - 1].detach();
 		}
 		this->run(0);
 	} else {
