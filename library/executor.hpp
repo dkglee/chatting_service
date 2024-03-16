@@ -1,14 +1,8 @@
 #ifndef EXECUTOR_HPP
 # define EXECUTOR_HPP
 
-# include <queue>
-# include <sys/epoll.h>
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <memory>
-
 # include "global_namespace.hpp"
-# include "thread_schedular.hpp"
+# include "schedular.hpp"
 
 namespace Global {
 	class Executor;
@@ -21,15 +15,15 @@ public:
 	
 	template <typename Func>
 	void addEvent(int fd, Func handler) {
-		acceptQueue.push(new OperationAccept(fd, 0, nullptr, handler, ACCEPT));
+		schedular_->addEvent(fd, handler);
 	}
 
 	template <typename Func>
 	void addEvent(int fd, char* buf, size_t len, Func handler, int op_flag) {
-		schedular_.addEvent(fd, buf, len, handler, op_flag);
+		schedular_->addEvent(fd, buf, len, handler, op_flag);
 	}
 
-	void executeOne();
+	void execute(int num = 0);
 private:
 	Executor& operator=(const Executor&) = delete;
 
@@ -37,11 +31,7 @@ private:
 	void callHandler(int ret);
 	void delFD(int fd);
 
-	int epollFd;
-	bool running;
-	Global::Schedular schedular_;
-	epoll_event events[MAX_EVENTS];
-	std::queue<IOperation*> acceptQueue;
+	Global::Schedular* schedular_;
 };
 
 #endif

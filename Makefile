@@ -15,7 +15,9 @@ SRCS = ./server/server.cpp \
 	./library/io_context.cpp \
 	./library/service.cpp \
 	./library/socket.cpp \
-	./library/tcp.cpp
+	./library/tcp.cpp \
+	./library/schedular.cpp \
+	./library/round_robin_schedular.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

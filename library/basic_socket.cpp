@@ -1,15 +1,18 @@
 #include "basic_socket.hpp"
 
 Global::BasicSocket::BasicSocket() noexcept
+	: io_service_(nullptr)
 {
 }
 
 Global::BasicSocket::~BasicSocket()
 {
+	if (io_service_ != nullptr)
+		delete io_service_;
 }
 
 Global::BasicSocket::BasicSocket(IoContext& io_context)
-	: io_service_(io_context)
+	: io_service_(new Service(io_context))
 {
 }
 
@@ -19,13 +22,13 @@ Global::BasicSocket::BasicSocket(IoContext& io_context)
 // 	io_service_.setIoContext(std::move(io_context));
 // }
 
-void Global::BasicSocket::setIoService(Global::Service& io_service)
+void Global::BasicSocket::setIoService(Global::Service* io_service)
 {
-	io_service_.setIoContext(io_service.getIoContext());
+	io_service_ = new Service(io_service->getIoContext());
 }
 
 Global::BasicSocket::BasicSocket(const BasicSocket&& other)
-	: io_service_(other.io_service_), socket_(other.socket_)
+	: io_service_(new Service(other.io_service_->getIoContext())), socket_(other.socket_)
 {
 	std::cout << "BasicSocket move constructor" << std::endl;
 }
@@ -36,8 +39,9 @@ Global::BasicSocket::BasicSocket(int socket)
 }
 
 Global::BasicSocket::BasicSocket(IoContext& io_context, BasicEndpoint& ep)
-	: io_service_(io_context), socket_(ep.domain(), ep.type(), ep.port())
+	: io_service_(new Service(io_context)), socket_(ep.domain(), ep.type(), ep.port())
 {
+	std::cout << "Do I come here?" << std::endl;
 }
 
 // Global::BasicSocket::BasicSocket(Socket&& socket) noexcept
@@ -46,7 +50,7 @@ Global::BasicSocket::BasicSocket(IoContext& io_context, BasicEndpoint& ep)
 // }
 
 Global::BasicSocket::BasicSocket(const BasicSocket& other)
-	: io_service_(other.io_service_), socket_(other.socket_)
+	: io_service_(new Service(other.io_service_->getIoContext())), socket_(other.socket_)
 {
 }
 

@@ -8,12 +8,11 @@
 
 namespace Global {
 	class IOperation;
-	struct Thread
-	{
+	struct Thread_Global_Variables {
 		std::mutex mtx;
 		std::queue<IOperation*> rwQueue;
 	};
-	inline Thread shm;
+	inline Thread_Global_Variables shm;
 };
 
 namespace Global {
@@ -141,6 +140,7 @@ namespace Global {
 	void async_write(int fd, char* buf, size_t len, Func handler) {
 		// Schedular schedular_;
 		// schedular_.addEvent(fd, buf, len, handler, WRITE);
+		std::cout << "async_write" << std::endl;
 		std::lock_guard<std::mutex> lock(shm.mtx);
 		shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, WRITE));
 	}

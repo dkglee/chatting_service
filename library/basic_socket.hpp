@@ -15,6 +15,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include <optional>
 
 # define MAX_BACKLOG 10
 # define READ 0
@@ -40,16 +41,16 @@ public:
 
 	int getSocket() const noexcept;
 	void setSocket(int socket) noexcept;
-	void setIoService(Service& io_service);
+	void setIoService(Service* io_service);
 
 	template <typename Func>
 	void async_read(char* buf, size_t len, Func handler) {
 		std::cout << "async_read" << std::endl;
-		io_service_.addEvent(socket_.getSocket(), buf, len, handler, READ);
+		io_service_->addEvent(socket_.getSocket(), buf, len, handler, READ);
 	}
 
 private:
-	Service io_service_;
+	Service* io_service_;
 	Socket socket_;
 };
 

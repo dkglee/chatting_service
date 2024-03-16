@@ -15,20 +15,21 @@ class Global::BasicAcceptor {
 private:
 	BasicAcceptor(const BasicAcceptor&) = delete;
 	BasicAcceptor& operator=(const BasicAcceptor&) = delete;
-	Service io_service_;
+	Service* io_service_;
 	BasicSocket listen_fd_;
 	// socket* tool;
 
 public:
+	~BasicAcceptor();
 	BasicAcceptor() noexcept;
 	BasicAcceptor(IoContext& io_context, BasicEndpoint& ep) noexcept;
-	Service& getIoService() {
+	Service* getIoService() {
 		return io_service_;
 	}
 	template <typename Func>
 	void async_accept(Func handler) {
 		std::cout << "async_accept" << std::endl;
-		io_service_.addEvent(listen_fd_.getSocket(), handler);
+		io_service_->addEvent(listen_fd_.getSocket(), handler);
 	}
 };
 
