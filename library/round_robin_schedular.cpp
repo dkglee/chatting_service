@@ -21,11 +21,8 @@ void Global::RoundRobinSchedular::runOneOrAll(int num) {
 			});
 			thread_pool[threadId - 1].detach();
 		}
-		this->run(0);
-	} else {
-		// std::cout << "hello" << std::endl;
-		this->run(0);
 	}
+	this->run(0);
 }
 
 // private member func below
@@ -75,11 +72,13 @@ int Global::RoundRobinSchedular::addEpollEvent(IOperation* op) {
 	epoll_event event;
 	event.data.ptr = (void*)op;
 	event.events = EPOLLET | EPOLLPRI;
-	if (this->fd_mtx.find(op->fd()) == this->fd_mtx.end()) {
-		this->fd_mtx[op->fd()];
+	{
+		std::lock_guard<std::mutex> lock(this->mtx_map);
+		if (this->fd_mtx.find(op->fd()) == this->fd_mtx.end()) {
+			this->fd_mtx[op->fd()];
+		}
 	}
 	if (op->op() == WRITE) {
-		// event.events |= EPOLLOUT;
 		this->async_write_aio(op);
 		return 0;
 	} else {
@@ -165,32 +164,27 @@ void Global::RoundRobinSchedular::callHandler(int ret, int threadId) {
 		IOperation* op = static_cast<IOperation*>(this->events[i].data.ptr);
 		if (this->events[i].events & EPOLLIN) {
 			if (op->op() == ACCEPT) {
-				if (this->fd_mtx[op->fd()].try_lock()) {
-					this->acceptSocket(op);
-					this->fd_mtx[op->fd()].unlock();
-				} else {
-					this->re_Register(&(this->events[i]));
+				{
+					std::lock_guard<std::mutex> lock(this->mtx_map);
+					if (this->fd_mtx[op->fd()].try_lock()) {
+						this->acceptSocket(op);
+						this->fd_mtx[op->fd()].unlock();
+					} else {
+						this->re_Register(&(this->events[i]));
+					}
 				}
 			} else {
-				if (this->fd_mtx[op->fd()].try_lock()) {
-					this->readSocket(op);
-					this->fd_mtx[op->fd()].unlock();
-				} else {
-					this->re_Register(&(this->events[i]));
+				{
+					std::lock_guard<std::mutex> lock(this->mtx_map);
+					if (this->fd_mtx[op->fd()].try_lock()) {
+						this->readSocket(op);
+						this->fd_mtx[op->fd()].unlock();
+					} else {
+						this->re_Register(&(this->events[i]));
+					}
 				}
 			}
 			delete op;
 		} 
 	}
 }
-
-// read 입력이 들어오는 경우
-// 1. 클라이언트의 작업이 끝나면 스스로 읽기 요청을 건네는 경우
-// 2. 스레드가 자신의 차례가 아니라 넘기는 경우
-
-// read(cli)를 하고 있는데 write(ano) 요청이 들어옴. 반대로 write(ano)를 하고 있는데 read(cli) 요청이 들어옴. write(ano)를 하고 있는데 write(cli) 요청이 들어옴
-// 그냥 다시 보내면 됨. 어차피 한번 epoll_wait을 한 순간 내용이 변경되지 않음.
-// 근데 이건 테스트 해봐야할듯.
-
-// 이미 처리중인 데이터가 중간에 바뀔 수 있는지 확인해 봐야겠다. 커널에서 복사한 데이터를 건네주는 건지 아니면 포인터만 넘기는건지.
-// ==> 복사한 데이터를 건네주는 것으로 확인됨. 그러므로 중간에 바뀔 일은 없다.

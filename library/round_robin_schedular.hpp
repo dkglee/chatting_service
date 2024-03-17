@@ -18,6 +18,7 @@ namespace Global {
 class Global::RoundRobinSchedular : public Global::Schedular {
 private:
 	std::vector<std::thread> thread_pool;
+	std::mutex mtx_map;
 	std::map<int, std::mutex> fd_mtx;
 	std::atomic<int> idx;
 	epoll_event events[MAX_EVENTS];
