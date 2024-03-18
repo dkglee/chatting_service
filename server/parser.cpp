@@ -22,17 +22,20 @@ Parser::ParseData Parser::parseForMessage(char* buf, int bytes_read) {
 	std::string message;
 	int i = 0;
 	if (buf[0] == '/') {
-		while (buf[i] != ' ' && i < bytes_read) {
+		while (buf[i] != ' ' && i < bytes_read && buf[i] != '\n') {
 			command += buf[i];
 			i++;
 		}
+		i++;
 	} else {
 		command = "message";
 	}
-	i++;
 	while (i < bytes_read) {
 		message += buf[i];
 		i++;
+	}
+	if (message.size() == 0) {
+		message = "none";
 	}
 	return std::make_pair(command, message);
 };

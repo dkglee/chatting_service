@@ -1,4 +1,5 @@
-#include "session.hpp"
+#include "./session.hpp"
+#include "./server.hpp"
 
 Session::Session(Global::BasicSocket socket)
 	: socket_(std::move(socket)), user_()
@@ -10,24 +11,39 @@ Session::~Session() {
 }
 
 void Session::start() {
-	if (this->setUser()) {
-		this->do_read();
-	} else {
-		// close();
+	// if (this->setUser()) {
+	// 	this->do_read();
+	// } else {
+	// 	// close();
+	// }
+	this->setUser();
+}
+
+void Session::setBuf(std::string buf) {
+	int i = 0;
+	for (auto it : buf) {
+		buf_[i++] = it;
 	}
 }
 
-bool Session::setUser() {
+char* Session::getBuf() {
+	return buf_;
+}
+
+void Session::setUser() {
 	auto self(shared_from_this());
 	socket_.async_read(buf_, 1024, [this, self](int error, int bytes_read){
-		if (!error) {
+		if (error == SUCCESS) {
 			this->user_.setSocket(socket_.getSocket());
 			auto data = Parser::parseForLogin(buf_, bytes_read);
 			auto product = Factory<Parser::ParseData, Product>::createProduct(data);
-			if (this->execute(std::move(product), this->user_)) {
-				std::cout << "user set" << std::endl;
-				do_read();
+			if (!(this->execute(this, self, std::move(product), this->user_))) {
+				// for error read again from client
+				std::cout << "setUser failed" << std::endl;
+				this->setUser();
 			}
+		} else {
+			std::cout << "user disconnected" << std::endl;
 		}
 	});
 }
@@ -48,7 +64,13 @@ void Session::do_read() {
 		if (!error) {
 			auto data = Parser::parseForMessage(buf_, bytes_read);
 			auto product = Factory<Parser::ParseData, Product>::createProduct(data);
-
+			if (!(this->execute(this, self, std::move(product), this->user_))) {
+				// for error read again from client
+				this->do_read();
+			}
+		} else {
+			std::cout << "user disconnected" << std::endl;
+			Server::removeUser(this->user_.getNickname());
 		}
 	});
 }

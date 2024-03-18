@@ -6,7 +6,7 @@ LDFLAGS = -pthread
 
 RM = rm -rf
 
-SRCS = ./server/server.cpp \
+SRCS = ./chatting_service.cpp \
 	./library/basic_acceptor.cpp \
 	./library/basic_endpoint.cpp \
 	./library/basic_socket.cpp \
@@ -17,7 +17,18 @@ SRCS = ./server/server.cpp \
 	./library/socket.cpp \
 	./library/tcp.cpp \
 	./library/schedular.cpp \
-	./library/round_robin_schedular.cpp
+	./library/round_robin_schedular.cpp \
+	./server/server.cpp \
+	./server/session.cpp \
+	./server/factory.cpp \
+	./server/parser.cpp \
+	./server/product.cpp \
+	./server/product_channel.cpp \
+	./server/product_login.cpp \
+	./server/product_msg.cpp \
+	./server/product_private_msg.cpp \
+	./server/product_quit.cpp \
+	./server/user.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

@@ -11,17 +11,17 @@ class Factory {
 public:
 	typedef std::function<std::unique_ptr<Product>(std::string)> Factor;
 
-	static void registerFactory(const Key& key, Factor factor) {
-		auto it = factories_.find(key.first());
+	static void registerFactory(std::string key, Factor factor) {
+		auto it = factories_.find(key);
 		if (it == factories_.end()) {
-			factories_.insert(std::make_pair(key.first(), factor));
+			factories_.insert(std::make_pair(key, factor));
 		}
 	}
 
 	static std::unique_ptr<Product> createProduct(const Key& key) {
-		auto it = factories_.find(key.first());
+		auto it = factories_.find(key.first);
 		if (it != factories_.end()) {
-			return it->second(key.second());
+			return it->second(key.second);
 		}
 		return nullptr;
 	
@@ -29,5 +29,8 @@ public:
 private:
 	static std::unordered_map<std::string, Factor> factories_;
 };
+
+template <typename Key, typename Product>
+std::unordered_map<std::string, typename Factory<Key, Product>::Factor> Factory<Key, Product>::factories_;
 
 #endif

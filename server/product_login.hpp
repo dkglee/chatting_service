@@ -3,6 +3,7 @@
 
 # include "./product.hpp"
 # include <string>
+# include <memory>
 
 class ProductLogin : public Product {
 private:
@@ -10,7 +11,7 @@ private:
 public:
 	ProductLogin(std::string data);
 	virtual ~ProductLogin();
-	virtual int execute(User& user);
+	virtual int execute(Session* thisPtr, std::shared_ptr<Session> self, User& user);
 };
 
 #endif

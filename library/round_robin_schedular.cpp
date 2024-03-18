@@ -140,8 +140,9 @@ void Global::RoundRobinSchedular::readSocket(IOperation* op) {
 	} else if (n == 0) {
 		delFd(op->fd());
 		op->socketHandler(CLOSE, n);
+	} else {
+		op->socketHandler(SUCCESS, n);
 	}
-	op->socketHandler(SUCCESS, n);
 }
 
 void Global::RoundRobinSchedular::deActivateFd(epoll_event* event, int ret) {

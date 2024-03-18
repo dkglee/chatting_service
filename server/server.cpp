@@ -1,5 +1,10 @@
 #include "./server.hpp"
 
+std::mutex Server::userMutex_;
+std::mutex Server::channelMutex_;
+std::unordered_map<std::string, User> Server::users_;
+std::unordered_map<std::string, std::vector<std::string>> Server::channels_;
+
 Server::Server(Global::IoContext& io_context, Global::BasicEndpoint& ep)
 	: acceptor_(io_context, ep)
 {
@@ -56,6 +61,7 @@ int Server::removeUser(std::string username) {
 	std::lock_guard<std::mutex> lock(userMutex_);
 	auto it = users_.find(username);
 	if (it != users_.end()) {
+		deleteUserFromChannel(username, it->second.getChannel());
 		users_.erase(it);
 		return 0;
 	} else {
@@ -74,6 +80,13 @@ int Server::addUserToChannel(std::string username, std::string channel) {
 		std::vector<std::string> users;
 		users.push_back(username);
 		channels_.insert(std::make_pair(channel, users));
+	}
+	{
+		std::lock_guard<std::mutex> lock(userMutex_);
+		auto usrIt = users_.find(username);
+		if (usrIt != users_.end()) {
+			usrIt->second.setChannel(channel);
+		}
 	}
 	return 0;
 }
