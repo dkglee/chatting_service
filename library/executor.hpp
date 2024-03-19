@@ -1,7 +1,6 @@
 #ifndef EXECUTOR_HPP
 # define EXECUTOR_HPP
 
-# include "global_namespace.hpp"
 # include "schedular.hpp"
 
 namespace Global {

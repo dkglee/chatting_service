@@ -12,7 +12,9 @@
 # include <unistd.h>
 # include <sys/eventfd.h>
 
-# include "global_namespace.hpp"
+# include "./global_namespace.hpp"
+# include "./operation_accept.hpp"
+# include "./operation_socket.hpp"
 
 namespace Global {
 	class Schedular;

@@ -20,9 +20,13 @@ public:
 private:
 	// void do_write(std::size_t bytes);
 	char buf_[1024];
-	void setUser();
 	Global::BasicSocket socket_;
 	User user_;
+
+	void setUser();
+	void setUserHandler(std::shared_ptr<Session> self, int error, int bytes_read);
+	void readHandler(std::shared_ptr<Session> self, int error, int bytes_read);
+
 	template <typename Product>
 	bool execute(Session* thisPtr, std::shared_ptr<Session> selfPtr,
 		std::unique_ptr<Product> product, User& user) {

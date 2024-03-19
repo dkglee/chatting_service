@@ -5,7 +5,6 @@
 #include "basic_socket.hpp"
 #include "basic_endpoint.hpp"
 #include "service.hpp"
-# include "global_namespace.hpp"
 
 namespace Global {
 	class BasicAcceptor;
@@ -17,7 +16,6 @@ private:
 	BasicAcceptor& operator=(const BasicAcceptor&) = delete;
 	Service* io_service_;
 	BasicSocket listen_fd_;
-	// socket* tool;
 
 public:
 	~BasicAcceptor();

@@ -6,7 +6,6 @@
 # include <queue>
 # include <memory>
 
-# include "global_namespace.hpp"
 # include "executor.hpp"
 
 namespace Global {
@@ -19,7 +18,6 @@ private:
 	std::shared_ptr<Executor> executor_;
 public:
 	IoContext();
-	// IoContext(Executor& executor);
 	IoContext(const IoContext&);
 
 	void setExecutor(std::shared_ptr<Executor> executor);

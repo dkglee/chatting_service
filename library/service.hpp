@@ -1,7 +1,6 @@
 #ifndef SERVICE_HPP
 # define SERVICE_HPP
 
-# include "global_namespace.hpp"
 # include "io_context.hpp"
 
 namespace Global {

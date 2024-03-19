@@ -1,7 +1,6 @@
 #ifndef ROUND_ROBIN_SCHEDULAR_HPP
 # define ROUND_ROBIN_SCHEDULAR_HPP
 
-#include "schedular.hpp"
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -10,6 +9,8 @@
 #include <map>
 #include <atomic>
 #include <aio.h>
+
+#include "./schedular.hpp"
 
 namespace Global {
 	class RoundRobinSchedular;
