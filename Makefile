@@ -28,7 +28,8 @@ SRCS = ./chatting_service.cpp \
 	./server/product_msg.cpp \
 	./server/product_private_msg.cpp \
 	./server/product_quit.cpp \
-	./server/user.cpp
+	./server/user.cpp \
+	./working_thread/worker.cpp 
 
 OBJS = $(SRCS:.cpp=.o)
 

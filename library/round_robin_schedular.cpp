@@ -99,6 +99,9 @@ bool Global::RoundRobinSchedular::isRunnable() {
 
 void Global::RoundRobinSchedular::re_RegisterAll(epoll_event* event, int ret) {
 	for (int i = 0; i < ret; i++) {
+		if (event[i].events & EPOLLIN && event[i].data.fd == Global::evfd) {
+			continue;
+		}
 		IOperation* op = static_cast<IOperation*>(event[i].data.ptr);
 		this->addEpollEvent(op);
 	}
@@ -147,6 +150,9 @@ void Global::RoundRobinSchedular::readSocket(IOperation* op) {
 
 void Global::RoundRobinSchedular::deActivateFd(epoll_event* event, int ret) {
 	for (int i = 0; i < ret; i++) {
+		if (event[i].events & EPOLLIN && event[i].data.fd == Global::evfd) {
+			continue;
+		}
 		IOperation* op = static_cast<IOperation*>(event[i].data.ptr);
 		epoll_event ev;
 		ev.events = 0;
@@ -162,30 +168,36 @@ void Global::RoundRobinSchedular::callHandler(int ret, int threadId) {
 		return ;
 	}
 	for (int i = 0; i < ret; i++) {
-		IOperation* op = static_cast<IOperation*>(this->events[i].data.ptr);
-		if (this->events[i].events & EPOLLIN) {
-			if (op->op() == ACCEPT) {
-				{
-					std::lock_guard<std::mutex> lock(this->mtx_map);
-					if (this->fd_mtx[op->fd()].try_lock()) {
-						this->acceptSocket(op);
-						this->fd_mtx[op->fd()].unlock();
-					} else {
-						this->re_Register(&(this->events[i]));
+		if (this->events[i].events & EPOLLIN && this->events[i].data.fd == Global::evfd) {
+			uint64_t u;
+			read(Global::evfd, &u, sizeof(uint64_t));
+			continue;
+		} else {
+			IOperation* op = static_cast<IOperation*>(this->events[i].data.ptr);
+			if (this->events[i].events & EPOLLIN) {
+				if (op->op() == ACCEPT) {
+					{
+						std::lock_guard<std::mutex> lock(this->mtx_map);
+						if (this->fd_mtx[op->fd()].try_lock()) {
+							this->acceptSocket(op);
+							this->fd_mtx[op->fd()].unlock();
+						} else {
+							this->re_Register(&(this->events[i]));
+						}
 					}
-				}
-			} else {
-				{
-					std::lock_guard<std::mutex> lock(this->mtx_map);
-					if (this->fd_mtx[op->fd()].try_lock()) {
-						this->readSocket(op);
-						this->fd_mtx[op->fd()].unlock();
-					} else {
-						this->re_Register(&(this->events[i]));
+				} else {
+					{
+						std::lock_guard<std::mutex> lock(this->mtx_map);
+						if (this->fd_mtx[op->fd()].try_lock()) {
+							this->readSocket(op);
+							this->fd_mtx[op->fd()].unlock();
+						} else {
+							this->re_Register(&(this->events[i]));
+						}
 					}
 				}
 			}
 			delete op;
-		} 
+		}
 	}
 }

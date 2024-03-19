@@ -1,12 +1,22 @@
 #include "schedular.hpp"
+#include <iostream>
 
 Global::Schedular::Schedular()
 	: epollFd(epoll_create1(0)), running(false)
 {
 	std::cout << "Schedular constructor" << std::endl;
+
+	Global::evfd = eventfd(0, EFD_NONBLOCK);
+	epoll_event ev;
+	ev.events = EPOLLIN | EPOLLET;
+	ev.data.fd = Global::evfd;
+	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, Global::evfd, &ev) == -1) {
+		std::cerr << "epoll_ctl: eventfd" << std::endl;
+	}
 }
 
 Global::Schedular::~Schedular() {
+	close(Global::evfd);
 	close(epollFd);
 }
 

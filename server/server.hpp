@@ -7,6 +7,9 @@
 # include "../library/basic_acceptor.hpp"
 # include "../library/basic_socket.hpp"
 # include "../library/basic_endpoint.hpp"
+
+# include "../working_thread/worker.hpp"
+
 # include "./user.hpp"
 # include "./session.hpp"
 
@@ -19,7 +22,7 @@
 
 class Server {
 public:
-	Server(Global::IoContext& io_context, Global::BasicEndpoint& ep);
+	Server(Global::IoContext& io_context, Global::BasicEndpoint& ep, int workerNum);
 	void start_accept();
 	static const std::vector<std::string> getUsersFromChannel(std::string channel);
 	static int getSocketFromUser(std::string username);
@@ -33,6 +36,8 @@ private:
 	static std::unordered_map<std::string, User> users_;
 	static std::unordered_map<std::string, std::vector<std::string>> channels_;
 	Global::BasicAcceptor acceptor_;
+	Worker workerThread_;
+	
 };
 
 #endif

@@ -5,6 +5,9 @@
 #include <queue>
 #include <mutex>
 #include <thread>
+#include <functional>
+#include <condition_variable>
+#include <unistd.h>
 
 namespace Global {
 	class IOperation;
@@ -13,6 +16,24 @@ namespace Global {
 		std::queue<IOperation*> rwQueue;
 	};
 	inline Thread_Global_Variables shm;
+};
+
+namespace Global {
+	class Session;
+	struct WorkerTask {
+		int bytes_read;
+		std::function<void(int)> task;
+		WorkerTask(int bytes_read_, std::function<void(int)> task_)
+			: bytes_read(bytes_read_), task(task_)
+		{}
+	};
+
+	struct WorkerManager {
+		std::mutex mtx;
+		std::condition_variable cv;
+		std::queue<WorkerTask*> workQueue;
+	};
+	inline WorkerManager workerManager;
 };
 
 namespace Global {
@@ -25,8 +46,10 @@ namespace Global {
 	#define FAIL 1
 	#define CLOSE 2
 
-	
+	inline int evfd;
+
 	class BasicSocket;
+	
 	class IOperation {
 	public:
 		virtual ~IOperation() {}
@@ -131,20 +154,25 @@ namespace Global {
 			handler_(error, byte);
 		}
 	};
-	// 1. 전역으로 가져갈 수 있나? // 전역으로 가져가야만 함.
-	// 
-	// Thread shm;
-	// class Schedular;
 
+	class Schedular;
 	template <typename Func>
 	void async_write(int fd, char* buf, size_t len, Func handler) {
-		// Schedular schedular_;
-		// schedular_.addEvent(fd, buf, len, handler, WRITE);
 		std::cout << "async_write" << std::endl;
-		std::lock_guard<std::mutex> lock(shm.mtx);
-		shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, WRITE));
+		{
+			std::lock_guard<std::mutex> lock(shm.mtx);
+			shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, WRITE));
+		}
+		uint64_t u = 1;
+		while (1) {
+			if (write(evfd, &u, sizeof(uint64_t)) == -1) {
+				if (errno == EAGAIN)
+					continue;
+			} else {
+				break;
+			}
+		}
 	}
 };
-
 
 #endif

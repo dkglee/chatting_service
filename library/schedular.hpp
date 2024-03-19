@@ -10,6 +10,7 @@
 # include <sys/socket.h>
 # include <memory>
 # include <unistd.h>
+# include <sys/eventfd.h>
 
 # include "global_namespace.hpp"
 
@@ -22,6 +23,7 @@ class Global::Schedular {
 private:
 	int epollFd;
 	bool running;
+	// static int evfd;
 	// epoll_event events[MAX_EVENTS];
 	std::mutex acceptMtx;
 	std::queue<IOperation*> acceptQueue;
@@ -41,6 +43,7 @@ public:
 	}
 
 	int getEfd();
+	// static int getEvfd();
 	void setRunning(bool);
 	bool getRunning();
 	bool acceptQueueEmpty();

@@ -5,8 +5,8 @@ std::mutex Server::channelMutex_;
 std::unordered_map<std::string, User> Server::users_;
 std::unordered_map<std::string, std::vector<std::string>> Server::channels_;
 
-Server::Server(Global::IoContext& io_context, Global::BasicEndpoint& ep)
-	: acceptor_(io_context, ep)
+Server::Server(Global::IoContext& io_context, Global::BasicEndpoint& ep, int workerNum)
+	: acceptor_(io_context, ep), workerThread_(workerNum)
 {
 	std::cout << "server started" << std::endl;
 	start_accept();

@@ -32,7 +32,7 @@ int main(void) {
 	Global::IoContext io_context;
 	Global::BasicEndpoint ep(Global::Tcp::v4(), 8080);
 	init_factory();
-	Server server(io_context, ep);
+	Server server(io_context, ep, 3);
 	io_context.run(3);
 	return 0;
 }
