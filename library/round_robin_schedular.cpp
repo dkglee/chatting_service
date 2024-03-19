@@ -26,7 +26,6 @@ void Global::RoundRobinSchedular::runOneOrAll(int num) {
 }
 
 // private member func below
-
 void Global::RoundRobinSchedular::run(int threadId) {
 	int ret;
 	while (this->isRunnable()) {
@@ -34,14 +33,14 @@ void Global::RoundRobinSchedular::run(int threadId) {
 			this->setRunning(true);
 			IOperation* op = this->accPopEvent();
 			if (this->addEpollEvent(op) == -1) {
-				// error
+				this->acceptPushEvent(op);
 			}
 		}
 		if (!this->rwqueueEmpty()) {
 			while (!this->rwqueueEmpty()) {
 				IOperation* op = this->rwpopEvent();
 				if (this->addEpollEvent(op) == -1) {
-					// error
+					this->rwpushEvent(op);
 				}
 			}
 		}
@@ -50,11 +49,10 @@ void Global::RoundRobinSchedular::run(int threadId) {
 	}
 }
 
-// 추후에 handler를 시그널로 할지 또 다른 방식으로 처리할지 생각해 봐야겠다.
+// 추후에 핸들러를 시그널로 바꿀까..?
 void Global::RoundRobinSchedular::async_write_aio(IOperation* op) {
 	struct aiocb* cb;
 	cb = (struct aiocb*)malloc(sizeof(struct aiocb));
-	// memset(&cb, 0, sizeof(struct aiocb));
 
 	cb->aio_fildes = op->fd();
 	cb->aio_buf = op->buf();

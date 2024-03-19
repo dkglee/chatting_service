@@ -14,8 +14,6 @@ Socket::Socket(const Socket& socket) noexcept
 Socket::Socket(const Socket&& socket) noexcept
 	: socket_(socket.socket_)
 {
-	std::cout << "Socket move constructor" << std::endl;
-	// socket.socket_ = -1;
 }
 
 Socket::Socket(int socket)
@@ -28,12 +26,11 @@ Socket::Socket(int domain, int type, unsigned short port_) {
 
 void Socket::listenTcp(int domain, int type, unsigned short port_) {
 	if (instlSocket(domain, type, port_) == -1) {
-		// throw std::runtime_error("instlSocket() failed");
+		socket_ = -1;
 	}
 	if (listen(socket_, MAX_BACKLOG) == -1) {
-		// throw std::runtime_error("listen() failed");
+		socket_ = -1;
 	}
-	// return *this;
 }
 
 int Socket::getSocket() const noexcept {

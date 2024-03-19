@@ -4,8 +4,6 @@
 Global::Schedular::Schedular()
 	: epollFd(epoll_create1(0)), running(false)
 {
-	std::cout << "Schedular constructor" << std::endl;
-
 	Global::evfd = eventfd(0, EFD_NONBLOCK);
 	epoll_event ev;
 	ev.events = EPOLLIN | EPOLLET;
@@ -36,6 +34,11 @@ Global::IOperation* Global::Schedular::rwpopEvent() {
 void Global::Schedular::rwpushEvent(IOperation* op) {
 	std::lock_guard<std::mutex> lock(shm.mtx);
 	shm.rwQueue.push(op);
+}
+
+void Global::Schedular::acceptPushEvent(IOperation* op) {
+	std::lock_guard<std::mutex> lock(acceptMtx);
+	acceptQueue.push(op);
 }
 
 int Global::Schedular::getEfd() {

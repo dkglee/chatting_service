@@ -18,7 +18,6 @@ public:
 	void start();
 	void do_read();
 private:
-	// void do_write(std::size_t bytes);
 	char buf_[1024];
 	Global::BasicSocket socket_;
 	User user_;

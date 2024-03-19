@@ -18,15 +18,12 @@
 
 namespace Global {
 	class Schedular;
-	// Thread shm;
 };
 
 class Global::Schedular {
 private:
 	int epollFd;
 	bool running;
-	// static int evfd;
-	// epoll_event events[MAX_EVENTS];
 	std::mutex acceptMtx;
 	std::queue<IOperation*> acceptQueue;
 public:
@@ -38,6 +35,7 @@ public:
 		std::lock_guard<std::mutex> lock(shm.mtx);
 		shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, op_flag));
 	}
+	
 	template <typename Func>
 	void addEvent(int fd, Func handler) {
 		std::lock_guard<std::mutex> lock(acceptMtx);
@@ -45,10 +43,10 @@ public:
 	}
 
 	int getEfd();
-	// static int getEvfd();
 	void setRunning(bool);
 	bool getRunning();
 	bool acceptQueueEmpty();
+	void acceptPushEvent(IOperation* op);
 	IOperation* accPopEvent();
 
 	int rwqueueEmpty();
