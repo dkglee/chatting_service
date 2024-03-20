@@ -19,7 +19,6 @@ Worker::Worker(int workerNum)
 					// no more work to do so exit and close the program
 					break;
 				}
-				std::cout << "I'm working\n";
 				task_ = Global::workerManager.workQueue.front();
 				Global::workerManager.workQueue.pop();
 				lock.unlock();
@@ -32,15 +31,10 @@ Worker::Worker(int workerNum)
 }
 
 void Worker::start() {
-	// if (workerNum_ == 1) {
-	// 	std::cout << "create single worker thread\n";
-	// 	tasks_[TASK_MSG]();
-	// } else {
 	for (int i = 0; i < workerNum_; i++) {
 		threads_.push_back(std::thread(tasks_[TASK_MSG]));
 		threads_[i].detach();
 	}
-	// }
 }
 
 void Worker::addTask(std::string key, std::function<void()> task) {
@@ -48,8 +42,3 @@ void Worker::addTask(std::string key, std::function<void()> task) {
 }
 
 Worker::~Worker() {}
-
-	// 지금으로써는 workerThread가 할 작업이 하나밖에 없어서 같은 작업을 할당해준다.
-	// for (int i = 0; i < workerNum; i++) {
-	// 	threads_.push_back(std::thread(tasks_[TASK_MSG]));
-	// }

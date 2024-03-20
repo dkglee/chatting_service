@@ -6,7 +6,6 @@ Global::Service::Service()
 Global::Service::Service(IoContext& io_context)
 	: io_context_(io_context)
 {
-	std::cout << "hi" << std::endl;
 }
 
 Global::Service::Service(const Service& service)
