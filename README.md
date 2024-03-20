@@ -6,7 +6,7 @@
 
 ## 설치 및 사용 방법
 - **install program**
-- 
+  
 `git clone https://github.com/dkglee/chatting_service.git`
   
 - **start server program** : 루프백 주소(`127.0.0.1`)로 `8080` 포트로 서버가 열리게 된다.
