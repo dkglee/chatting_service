@@ -12,6 +12,9 @@
 - **start server program** : 루프백 주소(`127.0.0.1`)로 `8080` 포트로 서버가 열리게 된다.
 
 `./chatting_service`
+
+![image](https://github.com/dkglee/chatting_service/assets/81220019/ed9daa71-7088-4929-a57a-77c41a3e4741)
+
   
 - **클라이언트 프로그램 `nc` 사용법**
 
