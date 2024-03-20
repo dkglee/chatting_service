@@ -16,7 +16,7 @@
 `./chat_server`
 
 <p align="center">
-<img src="https://s1.ezgif.com/tmp/ezgif-1-87f86163bd.gif">
+<img src="">
 </p>
   
 - **클라이언트 프로그램 `nc` 사용법**
@@ -30,7 +30,7 @@
 - **기능 5** : `[TEXT]` 같은 채널에 있는 사람들에게 메세지가 보내짐
 
 <p align="center">
-<img src="C:\Users\idead\Downloads\-Clipchamp-ezgif.com-video-to-gif-converter.gif">
+<img src="">
 </p>
 
 ## 개발 배경 및 목적
