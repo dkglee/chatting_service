@@ -30,20 +30,28 @@
 - 사용자 접속 상태를 표시해야 함
 - 알림 기능이 적용되어야 한다.
 
-### 문제 정의
+### 해결해야 할 문제 정의
 1. 실시간성을 보장해야함
 2. 대화의 내용이 기록되어야 한다.
 3. DAU가 2천만명을 수용할 수 있어야 한다.
 4. 알림 기능이 적용되어야 한다.
 
-### 해결 방법
+### 지금껏 해결한 문제들의 해결 방법
 
 #### 실시간성과 다수의 요청을 해결하기 위한 방안
 1. `epoll`를 이용하여 클라이언트의 입력을 비동기적으로 받을 수 있고 `aio`를 사용하여 비동기 출력을 할 수 있음.
 2. 멀티 스레드를 이용하여 클라이언트의 입력을 동시적으로 다수의 스레드가 받을 수 있음. (Boss Thread의 역할을 함)
 3. 또한, `worker thread`를 따로 두어 클라이언트의 입력을 작업 큐에 넣어 입력에 대한 결과를 비동기적으로 처리할 수 있음. 또한, `worker thread`를 여럿 두어 처리량을 대폭 늘릴 수 있음.
 
-**멀티 스레드를 다루면서 생긴 문제**
-<https://season-bee-387.notion.site/epoll_wait-e933284e162e46cf9ac8be22b39e6942>
-<https://season-bee-387.notion.site/Multithread-5d44cdcc047e497c87b3e8785f8c963a>
-<https://season-bee-387.notion.site/Boss-Worker-Model-f2f08672ef9a441596086adf19122a4d>
+## 기술 스택 및 도구
+- **백엔드** : 서버 측에서 사용된 기술 (C++)
+
+## 도전 과제
+
+### 멀티 스레드를 다루면서 생긴 문제
+[다수의 스레드가 epoll_wait을 했을때 생긴 문제점](https://season-bee-387.notion.site/epoll_wait-e933284e162e46cf9ac8be22b39e6942)
+
+[epoll과 멀티 스레드](https://season-bee-387.notion.site/Multithread-5d44cdcc047e497c87b3e8785f8c963a)
+
+[worker thread 구현하면서 생겼던 문제](https://season-bee-387.notion.site/Boss-Worker-Model-f2f08672ef9a441596086adf19122a4d)
+
