@@ -30,7 +30,7 @@
 - **기능 5** : `[TEXT]` 같은 채널에 있는 사람들에게 메세지가 보내짐
 
 <p align="center">
-<img src="https://s1.ezgif.com/tmp/ezgif-1-4547a4b2a7.gif">
+<img src="C:\Users\idead\Downloads\-Clipchamp-ezgif.com-video-to-gif-converter.gif">
 </p>
 
 ## 개발 배경 및 목적
