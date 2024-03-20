@@ -13,8 +13,9 @@
 
 `./chatting_service`
 
-![image](https://github.com/dkglee/chatting_service/assets/81220019/ed9daa71-7088-4929-a57a-77c41a3e4741)
-
+<p align="center">
+<img src="https://s1.ezgif.com/tmp/ezgif-1-87f86163bd.gif">
+</p>
   
 - **클라이언트 프로그램 `nc` 사용법**
 
