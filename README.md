@@ -30,7 +30,7 @@
 - **기능 5** : `[TEXT]` 같은 채널에 있는 사람들에게 메세지가 보내짐
 
 <p align="center">
-<img src="">
+<img src="https://github.com/dkglee/chatting_service/assets/81220019/920159f7-3583-4e34-8a2d-2c8a089e9b23">
 </p>
 
 ## 개발 배경 및 목적
