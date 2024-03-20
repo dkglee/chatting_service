@@ -84,6 +84,6 @@
   - 멀티 스레딩에 따른 캐시 일관성에 대한 문제 고민
   - 스케줄링 방법에 대해서 좀 더 고민이 필요함
 
-## Notion Page
+## 개발하면서 만난 문제 및 설계 [노션]
 - [노션 페이지로 이동](https://season-bee-387.notion.site/Chat-Service-35708aad3f054c059e4f489d0af2c6fc)
 
