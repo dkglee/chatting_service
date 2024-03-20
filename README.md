@@ -4,5 +4,9 @@
 
 - **개발 기간** : 03.06 ~ 03.20
 
+## 설치 및 사용 방법
+- `git clone https://github.com/dkglee/chatting_service.git`
+- `./chatting_service`
+
 ## 개발 배경 및 목적
 - 
