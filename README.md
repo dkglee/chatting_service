@@ -72,5 +72,5 @@
   - 스케줄링 방법에 대해서 좀 더 고민이 필요함
 
 ## Notion Page
-- [노션 페이지로 이동](https://season-bee-387.notion.site/Chat-Service-35708aad3f054c059e4f489d0af2c6fc, 노션 페이지)
+- [노션 페이지로 이동](https://season-bee-387.notion.site/Chat-Service-35708aad3f054c059e4f489d0af2c6fc)
 
