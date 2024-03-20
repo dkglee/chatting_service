@@ -7,7 +7,6 @@
 Global::Executor::Executor()
 	: schedular_(new Global::RoundRobinSchedular())
 {
-	std::cout << "Executor constructor" << std::endl;
 }
 
 Global::Executor::~Executor() {

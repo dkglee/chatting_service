@@ -5,11 +5,9 @@
 Global::RoundRobinSchedular::RoundRobinSchedular()
 	: idx(0)
 {
-	std::cout << "RoundRobinSchedular constructor" << std::endl;
 }
 
 Global::RoundRobinSchedular::~RoundRobinSchedular() {
-	std::cout << "RoundRobinSchedular destructor" << std::endl;
 }
 
 

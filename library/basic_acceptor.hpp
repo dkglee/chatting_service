@@ -26,7 +26,6 @@ public:
 	}
 	template <typename Func>
 	void async_accept(Func handler) {
-		std::cout << "async_accept" << std::endl;
 		io_service_->addEvent(listen_fd_.getSocket(), handler);
 	}
 };

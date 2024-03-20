@@ -14,14 +14,12 @@ Server::Server(Global::IoContext& io_context, Global::BasicEndpoint& ep, int wor
 
 void Server::start_accept() {
 	acceptor_.async_accept([this](int error, Global::BasicSocket& socket){
-		std::cout << "accept start" << std::endl;
 		if (!error) {
 			socket.setIoService(acceptor_.getIoService());
 			std::make_shared<Session>(socket)->start();
 		}
 		start_accept();
 	});
-	std::cout << "accept end" << std::endl;
 }
 
 const std::vector<std::string> Server::getUsersFromChannel(std::string channel) {

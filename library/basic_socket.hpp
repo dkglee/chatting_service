@@ -27,10 +27,6 @@ namespace Global {
 
 class Global::BasicSocket {
 public:
-	// typedef Global::BasicEndpoint endpoint;
-	// BasicSocket(IoContext&& io_context);
-	// explicit BasicSocket(Socket&& socket) noexcept;
-	// BasicSocket listen(BasicEndpoint& ep);
 	BasicSocket() noexcept;
 	~BasicSocket();
 	BasicSocket(IoContext& io_context);
@@ -45,7 +41,6 @@ public:
 
 	template <typename Func>
 	void async_read(char* buf, size_t len, Func handler) {
-		std::cout << "async_read" << std::endl;
 		io_service_->addEvent(socket_.getSocket(), buf, len, handler, READ);
 	}
 

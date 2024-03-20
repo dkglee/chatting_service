@@ -58,7 +58,6 @@ namespace Global {
 
 	template <typename Func>
 	void async_write(int fd, char* buf, size_t len, Func handler) {
-		std::cout << "async_write" << std::endl;
 		{
 			std::lock_guard<std::mutex> lock(shm.mtx);
 			shm.rwQueue.push(new OperationSocket(fd, len, buf, handler, WRITE));
